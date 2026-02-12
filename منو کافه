@@ -1,0 +1,220 @@
+<!DOCTYPE html><html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منوی کافه</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #000000;
+      --card: #f2f2f2;
+    }
+    body.dark {
+      --bg: #0f0f0f;
+      --text: #ffffff;
+      --card: #1f1f1f;
+    }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: 0.3s;
+    }
+    header {
+      text-align: center;
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+    header img {
+      max-width: 300px;
+      height: auto;
+    }
+    .container {
+      padding: 20px;
+    }
+    .menu-button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      background: #c59d5f;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .categories button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+    }
+    .items {
+      margin-top: 20px;
+    }
+    .item {
+      display: flex;
+      gap: 10px;
+      background: var(--card);
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+      position: relative;
+    }
+    .item img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .price {
+      margin-right: auto;
+      font-weight: bold;
+    }
+    .admin-panel {
+      margin-top: 20px;
+      display: none;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+    .admin-panel input, .admin-panel select {
+      margin-bottom: 5px;
+      width: 100%;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .admin-panel button {
+      padding: 10px;
+      background: #c59d5f;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    .toggle {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      background: #c59d5f;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>  <header>
+    <!-- لوگوی کافه -->
+    <img src="logo.png" alt="Cafe Logo" />
+  </header>  <div class="container">
+    <button class="menu-button" onclick="showCategories()">منو</button><div class="categories" id="categories" style="display:none;">
+  <button onclick="showItems('hot')">نوشیدنی های گرم</button>
+  <button onclick="showItems('cold')">نوشیدنی های سرد</button>
+  <button onclick="showItems('herbal')">دمنوش</button>
+  <button onclick="showItems('shake')">شیک ها</button>
+</div>
+
+<div class="items" id="items"></div>
+
+<div class="admin-panel" id="adminPanel">
+  <h3>پنل مدیریت</h3>
+  <input type="text" id="newName" placeholder="نام نوشیدنی">
+  <input type="text" id="newPrice" placeholder="قیمت">
+  <input type="text" id="newImg" placeholder="نام عکس (مثال: hot3.jpg)">
+  <select id="newCategory">
+    <option value="hot">نوشیدنی گرم</option>
+    <option value="cold">نوشیدنی سرد</option>
+    <option value="herbal">دمنوش</option>
+    <option value="shake">شیک</option>
+  </select>
+  <button onclick="addItem()">افزودن آیتم جدید</button>
+</div>
+
+  </div><button class="toggle" onclick="toggleTheme()">☾</button>
+
+  <script>
+    let adminMode = false;
+
+    const data = {
+      hot: [
+        { name: 'قهوه اسپرسو', price: '80,000', img: 'hot1.jpg' },
+        { name: 'کاپوچینو', price: '95,000', img: 'hot2.jpg' }
+      ],
+      cold: [
+        { name: 'آیس لاته', price: '100,000', img: 'cold1.jpg' }
+      ],
+      herbal: [
+        { name: 'دمنوش نعناع', price: '70,000', img: 'herbal1.jpg' }
+      ],
+      shake: [
+        { name: 'شیک شکلات', price: '120,000', img: 'shake1.jpg' }
+      ]
+    };
+
+    function showCategories() {
+      document.getElementById('categories').style.display = 'block';
+      document.getElementById('items').innerHTML = '';
+    }
+
+    function showItems(type) {
+      const itemsDiv = document.getElementById('items');
+      itemsDiv.innerHTML = '';
+      data[type].forEach((item, index) => {
+        itemsDiv.innerHTML += `
+          <div class="item">
+            <img src="${item.img}" />
+            <div>${item.name}</div>
+            <div class="price">${item.price} تومان</div>
+            ${adminMode ? `<input type='text' value='${item.price}' oninput='changePrice("${type}", ${index}, this.value)' />` : ''}
+          </div>`;
+      });
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+    }
+
+    // پنل مدیریت
+    function toggleAdmin() {
+      adminMode = !adminMode;
+      document.getElementById('adminPanel').style.display = adminMode ? 'block' : 'none';
+      // دوباره آیتم‌ها را رندر کن تا فیلد قیمت نمایش داده شود
+      ['hot','cold','herbal','shake'].forEach(category => showItems(category));
+    }
+
+    function changePrice(category, index, value) {
+      data[category][index].price = value;
+      showItems(category);
+    }
+
+    function addItem() {
+      const name = document.getElementById('newName').value;
+      const price = document.getElementById('newPrice').value;
+      const img = document.getElementById('newImg').value;
+      const category = document.getElementById('newCategory').value;
+      if(name && price && img) {
+        data[category].push({name, price, img});
+        showItems(category);
+        document.getElementById('newName').value = '';
+        document.getElementById('newPrice').value = '';
+        document.getElementById('newImg').value = '';
+      }
+    }
+
+    // برای ورود به پنل Admin (روی دسکتاپ دو بار کلیک روی لوگو)
+    document.querySelector('header img').ondblclick = toggleAdmin;
+  </script></body>
+</html>
